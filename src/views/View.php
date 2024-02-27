@@ -31,7 +31,7 @@ class View
 
     private function getJavaScriptTag(string $file): string
     {
-        return '<script type="text/javascript" src="/assets/scripts/' . $file . '.js' . $this->getAssetsVersion() . '"></script>';
+        return '<script type="text/javascript" src="assets/scripts/' . $file . '.js' . $this->getAssetsVersion() . '"></script>';
     }
 
     protected function renderHtml(array $variables, array $script_files = [])

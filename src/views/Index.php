@@ -1,6 +1,7 @@
 <?php
 
 namespace src\views;
+require_once "View.php";
 
 class Index extends View
 {
@@ -17,7 +18,7 @@ class Index extends View
         if (isset($_GET['session'])) {
             $image_property = 'https://chart.googleapis.com/chart?cht=qr&choe=UTF-8&chld=L|0&chs=250x131&chl=' . $uri;
         } else {
-            $image_property = '/assets/images/poker.png';
+            $image_property = 'assets/images/poker.png';
         }
         $variables = parent::getBaseVariables();
         $variables["url"] = $uri;

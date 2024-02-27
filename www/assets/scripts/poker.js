@@ -43,7 +43,7 @@ function loadSessionId() {
             enterSession();
             return;
         }
-        apiFetch("/api/sessions/" + inputSessionId.value, "GET", pErrorStart, function (data) {
+        apiFetch("api/sessions/" + inputSessionId.value, "GET", pErrorStart, function (data) {
             if (data.has_password === true) inputsSessionPassword[1].parentElement.style.display = "block";
             divStartSession.style.display = "none";
             divEnterSession.style.display = "block";
@@ -62,7 +62,7 @@ function loadUsername() {
 }
 
 function loadCards(onReady) {
-    apiFetch("/api/cards", "GET", pErrorStart, function (data) {
+    apiFetch("api/cards", "GET", pErrorStart, function (data) {
         window.card_sets = data;
         for (const [cards_key, cards_value] of Object.entries(data)) {
             const cards = document.createElement("option");
@@ -93,7 +93,7 @@ function openSession(session) {
     divSession.style.display = "block";
     setSessionLink();
     handleOwnerButtons();
-    apiFetch("/api/cards/" + window.session.card_set, "GET", pErrorSession, function (data) {
+    apiFetch("api/cards/" + window.session.card_set, "GET", pErrorSession, function (data) {
         window.card_set = data;
         handleSession(window.session, true);
         window.setInterval(refreshSession, 2000);
@@ -102,7 +102,7 @@ function openSession(session) {
 }
 
 function refreshSession() {
-    apiFetch("/api/sessions/" + window.session.session, "GET", pErrorSession, function (data) {
+    apiFetch("api/sessions/" + window.session.session, "GET", pErrorSession, function (data) {
         handleSession(data);
     }, null, window.session.token);
 }
@@ -164,7 +164,7 @@ function setUserCards() {
             if (window.session.current_vote.uncovered === null) {
                 let diVCard = this.parentElement;
                 let payload = {"card": card[0]};
-                apiFetch("/api/sessions/" + window.session.session + "/votes/" + window.session.current_vote.key, "POST", pErrorSession, function () {
+                apiFetch("api/sessions/" + window.session.session + "/votes/" + window.session.current_vote.key, "POST", pErrorSession, function () {
                     document.querySelectorAll(".card").forEach(function (card) {
                         card.classList.remove("selected");
                     });
@@ -197,7 +197,7 @@ function setUsers() {
         let divName = document.createElement("div");
         if (value.robo_icon !== null) {
             let roboIcon = document.createElement("img");
-            roboIcon.src = '/assets/images/icons/robo-' + value.robo_icon + '.png';
+            roboIcon.src = 'assets/images/icons/robo-' + value.robo_icon + '.png';
             divName.append(roboIcon);
         }
         divName.append(value.name);
@@ -270,7 +270,7 @@ function changeOwner(user_id, user_name) {
     if (window.session.owner === window.session.user_id) {
         if (confirm("Do you want to define " + user_name + " as owner?")) {
             let payload = {"new_owner_user_id": user_id};
-            apiFetch("/api/sessions/" + window.session.session, "PUT", pErrorSession, function () {
+            apiFetch("api/sessions/" + window.session.session, "PUT", pErrorSession, function () {
                 refreshSession();
             }, payload, window.session.token);
         }
@@ -287,9 +287,10 @@ function startSession() {
     if (inputsSessionPassword[0].value !== "") {
         payload['session']['password'] = inputsSessionPassword[0].value;
     }
-    apiFetch("/api/sessions", "POST", pErrorStart, function (data) {
+    apiFetch("api/sessions", "POST", pErrorStart, function (data) {
         localStorage.setItem("session", JSON.stringify(payload));
-        window.location.replace("/" + data.session);
+        //window.location.replace("/" + data.session);
+        window.location.replace(data.session);
     }, payload);
 }
 
@@ -302,7 +303,7 @@ function enterSession() {
     if (inputsSessionPassword[1].value !== "") {
         payload['session'] = {'password': inputsSessionPassword[1].value};
     }
-    apiFetch("/api/sessions/" + inputSessionId.value + "/users", "POST", pErrorEnter, function (data) {
+    apiFetch("api/sessions/" + inputSessionId.value + "/users", "POST", pErrorEnter, function (data) {
         openSession(data);
     }, payload);
 }
@@ -348,20 +349,21 @@ function loadEvents() {
     // vote uncover
     btnUncover.addEventListener("click", function () {
         let payload = {"task": "uncover"};
-        apiFetch("/api/sessions/" + window.session.session + "/votes/" + window.session.current_vote.key, "PUT", pErrorSession, function () {
+        apiFetch("api/sessions/" + window.session.session + "/votes/" + window.session.current_vote.key, "PUT", pErrorSession, function () {
             refreshSession();
         }, payload, window.session.token);
     });
 
     // new vote
     btnNewVote.addEventListener("click", function () {
-        apiFetch("/api/sessions/" + window.session.session + "/votes", "POST", pErrorSession, function () {
+        apiFetch("api/sessions/" + window.session.session + "/votes", "POST", pErrorSession, function () {
             refreshSession();
         }, null, window.session.token);
     });
 
     btnExit.addEventListener("click", function () {
-        const link = "/" + session.session;
+        //const link = "/" + session.session;
+        const link = session.session;
         window.location.replace(link);
     });
 

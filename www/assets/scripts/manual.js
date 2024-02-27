@@ -1,7 +1,7 @@
 const pCards = document.querySelector("#cards");
 
 function loadCards(onReady) {
-    apiFetch("/api/cards", "GET", document.createElement("div"), function (data) {
+    apiFetch("api/cards", "GET", document.createElement("div"), function (data) {
         window.card_sets = data;
         onReady();
     })
