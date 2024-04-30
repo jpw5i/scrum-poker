@@ -22,17 +22,19 @@ class Poker
      * @throws NotFoundException
      * @throws Exception
      */
-    function __construct(?string $session_id = null, ?string $owner = null, ?string $card_set = null)
+    function __construct(?string $session_id = null, ?string $owner = null, ?string $card_set = null, ?string $story_detail = null)
     {
         if (!is_dir(self::SESSION_BASE_PATH)) {
             mkdir(self::SESSION_BASE_PATH);
         }
         if ($session_id === null) {
-            $this->createSession($owner, $card_set);
+            $this->createSession($owner, $card_set, $story_detail);
         } else {
             $this->session_id = $session_id;
             $this->loadSession();
         }
+
+        //$this->session->setStoryDetail($story_detail);
     }
 
 
@@ -128,9 +130,9 @@ class Poker
     /**
      * @throws Exception
      */
-    private function createSession(?string $owner = null, ?string $card_set = null): void
+    private function createSession(?string $owner = null, ?string $card_set = null, ?string $story_detail = null): void
     {
-        $this->session = new Session(card_set: $card_set);
+        $this->session = new Session(card_set: $card_set, story_detail: $story_detail);
         if ($owner != null) {
             $this->current_user_id = $this->session->addUser($owner);
             $this->saveUserSessionAlive();
@@ -268,10 +270,11 @@ class Poker
      * @throws ForbiddenException
      * @throws Exception
      */
-    public function startVote()
+    public function startVote(/*string $story_detail = null*/)
     {
         if ($this->userIsOwner()) {
             $this->session->addVote();
+            //$this->session->setStoryDetail($story_detail);
             $this->saveSession();
             $stats = new Statistics();
             $stats->addVote();
@@ -347,7 +350,8 @@ class Poker
             $current_vote_response = (object)[
                 'key' => $this->session->getCurrentVoteKey(),
                 'uncovered' => $uncovered,
-                'started' => $started,
+                'started' => $started/*,
+                'story_detail' => $this->session->getStoryDetail()*/
             ];
         }
         return (object)[

@@ -15,11 +15,12 @@ class Session
     public ?string $password = null;
     public string $card_set = 'default';
     public object $votes;
+    public string $story_detail = 'no information';
 
     /**
      * @throws Exception
      */
-    public function __construct(?array $load = null, ?string $card_set = null)
+    public function __construct(?array $load = null, ?string $card_set = null, ?string $story_detail = null)
     {
         $this->created = time();
         $this->users = (object)[];
@@ -30,6 +31,9 @@ class Session
         }
         if ($load !== null) {
             $this->load($this, $load);
+        }
+        else{
+            //$this->setStoryDetail($story_detail);
         }
     }
 
@@ -101,6 +105,21 @@ class Session
         else return $this->votes->{$this->getCurrentVoteKey()};
     }
 
+    public function setStoryDetail(string $storyDetail = null): void
+    {
+        if($storyDetail == null)
+            $$this->story_detail = 'no information';
+        else
+            $this->story_detail = $storyDetail;
+    }
+
+    public function getStoryDetail(): string
+    {
+        if($this->story_detail == null)
+            $this->story_detail = 'no information';
+        return $this->story_detail;
+    }
+
     public function addVote(): void
     {
         $last_vote = $this->getCurrentVote();
@@ -110,7 +129,8 @@ class Session
                 'started' => time(),
                 'votes' => $votes,
                 'uncovered' => null,
-                'card_set' => $this->card_set
+                'card_set' => $this->card_set/*,
+                'story_detail' => $this->getStoryDetail()*/
             ];
         }
     }

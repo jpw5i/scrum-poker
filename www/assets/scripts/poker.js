@@ -21,6 +21,7 @@ const pErrorSession = document.querySelector(".session .error");
 const pSessionLink = document.querySelector("#session-link");
 const pUserCards = document.querySelector("#user-cards");
 const pUsers = document.querySelector("#users");
+const pStoryDetail = document.querySelector("#story-detail");
 const divOwnerButtons = [btnUncover, btnNewVote, btnQrcode];
 const svgUserVoted = document.querySelector("#user-voted");
 const svgUserNotDone = document.querySelector("#user-not-done");
@@ -110,6 +111,7 @@ function refreshSession() {
 function handleSession(session, force = false) {
     if (force || JSON.stringify(window.session) !== JSON.stringify(session)) {
         window.session = session;
+        changeStoryDetail();
         handleOwnerButtons();
         handleButtons();
         setUserCards();
@@ -266,6 +268,13 @@ function setUsers() {
     }
 }
 
+
+function changeStoryDetail() {
+    pStoryDetail.innerHTML = "";
+    if(window.session.current_vote.story_detail !== undefined)
+        pStoryDetail.innerHTML = window.session.current_vote.story_detail;
+}
+
 function changeOwner(user_id, user_name) {
     if (window.session.owner === window.session.user_id) {
         if (confirm("Do you want to define " + user_name + " as owner?")) {
@@ -283,10 +292,13 @@ function showEnterSession() {
 }
 
 function startSession() {
+    //let storyDetail = prompt("Enter the story detail");
     let payload = {user: {name: inputsUserName[0].value}, session: {card_set: selectCardSet.value}}
     if (inputsSessionPassword[0].value !== "") {
         payload['session']['password'] = inputsSessionPassword[0].value;
     }
+
+    //payload['session']['story_detail'] = storyDetail;
     apiFetch("api/sessions", "POST", pErrorStart, function (data) {
         localStorage.setItem("session", JSON.stringify(payload));
         //window.location.replace("/" + data.session);
@@ -356,9 +368,13 @@ function loadEvents() {
 
     // new vote
     btnNewVote.addEventListener("click", function () {
+        //let storyDetail = prompt("Enter the story detail");
+        //let payload = {story_detail: storyDetail};
+        //let payload = {user: {name: inputsUserName[0].value}, session: {card_set: selectCardSet.value}}
+        //apiFetch(route, method, pErrorElement, success, payload = null, token = null)
         apiFetch("api/sessions/" + window.session.session + "/votes", "POST", pErrorSession, function () {
             refreshSession();
-        }, null, window.session.token);
+        }, /*payload*/null, window.session.token);
     });
 
     btnExit.addEventListener("click", function () {

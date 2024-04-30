@@ -38,7 +38,7 @@ function apiFetch(route, method, pErrorElement, success, payload = null, token =
     })
         .then(response => {
             if (response.status > 201) {
-                response.json().then(data => {
+                response.clone().json().then(data => {
                     pErrorElement.innerHTML = data.detail !== "" ? data.detail : data.title;
                 });
             }

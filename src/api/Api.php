@@ -1,7 +1,7 @@
-<?php
+<?php 
 
 namespace src\api;
-
+header('Access-Control-Allow-Origin: *');
 use Exception;
 use src\api\exceptions\ForbiddenException;
 use src\api\exceptions\NotFoundException;
@@ -15,13 +15,14 @@ class Api extends Request
 
             // start session
             $this->post('sessions', function ($data) {
-                $poker = new Poker(owner: $data->user->name, card_set: $data->session->card_set);
+            $poker = new Poker(owner: $data->user->name, card_set: $data->session->card_set/*, story_detail: $data->session->story_detail*/);
                 if (property_exists($data->user, 'password')) {
                     $poker->setUserPassword($data->user->password);
                 }
                 if (property_exists($data->session, 'password')) {
                     $poker->setSessionPassword($data->session->password);
                 }
+                
                 $this->sendCreated($poker->getSessionResponse());
             }, Structures::sessions());
 
@@ -39,7 +40,7 @@ class Api extends Request
             $this->post('sessions/<session>/votes', function ($session_id, $data, $headers) {
                 $poker = new Poker(session_id: $session_id);
                 $poker->validateToken($headers->token);
-                $poker->startVote();
+                $poker->startVote(/*$data->story_detail*/);
                 $this->sendSuccess($poker->getSessionResponse());
             }, Structures::empty(), (object)['token' => (object)['required' => true]]);
 
